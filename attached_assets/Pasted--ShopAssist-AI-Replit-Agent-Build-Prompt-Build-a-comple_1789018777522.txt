@@ -1,0 +1,116 @@
+# ShopAssist AI — Replit Agent Build Prompt
+
+Build a complete, working web app called **ShopAssist AI**, an AI-powered customer support agent for a fictional e-commerce company. This is a **hackathon/college prototype** — prioritize a smooth demo, professional UI, and visible AI-agent behavior over backend complexity. Do not overbuild.
+
+## Stack
+- Frontend: React + Vite, Tailwind CSS, Lucide React icons
+- Backend: Node.js + Express
+- Data: SQLite or a simple JSON mock database (no external e-commerce APIs)
+- AI: any LLM API, read from an environment variable — **must still work with realistic canned/fallback responses if no key is set**
+
+## Core Concept
+`Customer → AI Agent → Tool → Mock Database → Result → AI Response`
+
+The UI must make this chain visible (e.g., a small "AI Agent Activity" card showing which tool ran and what it found) so it reads as an agent, not a generic chatbot.
+
+## App Structure
+Sidebar nav: Home · AI Support · Orders · Products · Returns · Agent Dashboard
+
+### 1. Landing Page
+- Hero: "ShopAssist AI" / "Your intelligent e-commerce support agent" / subtitle about tracking, discovery, returns, support in one assistant
+- Buttons: "Start AI Support" (primary), "Explore Dashboard" (secondary)
+- Visual 3-step flow: **Ask → AI Understands → Action**, with a worked example (order status lookup)
+- Feature cards: AI Support, Order Tracking, Product Discovery, Returns, Customer Memory, Agent Analytics
+- Modern SaaS look — no generic ChatGPT-clone styling
+
+### 2. AI Support Page (core page)
+Three-column layout: conversation list (left) · chat (center) · customer context panel (right).
+Natural free-text chat. Each AI turn that uses a tool shows:
+- "Analyzing request..." → **Tool Used** (name) → **Result** → then the final natural-language reply
+Never expose raw code/JSON to the customer — only the friendly activity summary.
+
+Quick-action buttons under the input: Track my order · Return an order · Check refund · Find a product · Recommend something — each pre-fills a relevant prompt.
+
+### 3. Agent Tools (backend functions)
+| Tool | Input | Returns |
+|---|---|---|
+| `getOrderStatus` | orderId | order id, customer, items, date, status, est. delivery, tracking # |
+| `searchProducts` | query | name, category, price, rating, stock, description, image |
+| `createReturn` | orderId, reason | return id, order id, reason, status, pickup date |
+| `checkRefundStatus` | orderId | refund id, amount, status, expected date |
+| `getCustomerProfile` | customerId | name, past orders, preferred categories, past support interactions, preferences |
+
+Order statuses: Processing → Shipped → Out for Delivery → Delivered (also Cancelled).
+
+The AI should pick the right tool from intent, e.g.: "Where is order #1024?" → `getOrderStatus`; "I want to return #1024" → `createReturn`; "Running shoes under ₹5000" → `searchProducts`; "Has my refund arrived?" → `checkRefundStatus`.
+
+### 4. Customer Memory
+Lightweight simulated memory (no real ML needed): store a customer's preferred category, last purchase, and support preference, and have the AI reference it when giving recommendations ("Based on your interest in running shoes..."). Show a small "Customer Memory" panel with these fields.
+
+### 5. Mock Data
+- 10 customers
+- 30 products across Electronics, Fashion, Footwear, Home, Beauty, Sports
+- 30 orders, realistic order IDs like `#QC1001`
+- Prices in ₹ (e.g., Wireless Headphones — ₹2,499, 4.5★, in stock)
+
+### 6. Orders Page
+Table: Order ID, Product, Date, Status (badge), Expected Delivery, Amount. Click → detail view with a delivery timeline (Placed → Packed → Shipped → Out for Delivery → Delivered) highlighting the current stage.
+
+### 7. Products Page
+Search + category filter + price filter + rating; product cards with image, name, category, rating, price, stock. Each card has an "Ask AI" button that opens AI Support with a pre-filled question ("Is this product suitable for me?").
+
+### 8. Returns Page
+Table: Return ID, Order ID, Product, Reason, Status, Pickup Date, Refund Status. "Start a Return" button drives a simulated return flow.
+
+### 9. Agent Dashboard
+KPI cards: Total Conversations, % Resolved by AI, Avg Response Time, Active Customers.
+Charts: conversations/day, issue categories, resolution rate.
+Sections: **AI Agent Activity Feed** (recent tool actions) and **Tool Usage** (call counts per tool).
+This page is the centerpiece for the presentation — it visually proves the agent architecture.
+
+### 10. Issue Categories
+Order Tracking, Returns, Refunds, Product Search, Recommendations, Payment, Delivery, General Support — surfaced in the dashboard.
+
+## UI Design
+Clean light background, blue/purple accents, rounded cards, soft shadows, generous spacing, modern typography, responsive (desktop-first). Subtle hover/animation only — no heavy motion, no console errors, include loading/empty/error states throughout.
+
+## Error Handling & Robustness
+- Unknown order ID → "Sorry, I couldn't find that order. Please check the order ID and try again."
+- Out-of-stock product → clear message, no crash
+- AI API unavailable → fall back to canned responses so the demo never breaks
+- Never surface API keys or raw server errors to the user
+
+## Demo Mode
+Provide a one-click demo identity: customer **Alex Kumar**, sample order **#QC1024**, so the full flow can be run without manual data entry.
+
+## Required End-to-End Demo Flow (must work exactly)
+1. Land on homepage → "Start AI Support"
+2. Ask: "Where is my order #QC1024?" → agent activity shows Order Status Tool → DB result → reply: "out for delivery, expected today"
+3. Ask: "I want to return it because it's damaged." → AI asks for confirmation/reason if needed → calls `createReturn` → shows Return ID (e.g. `RET-2048`), status "Pickup Scheduled"
+4. Open Agent Dashboard → see the conversation reflected in activity feed, tool usage, and KPIs
+5. Open Products → use "Ask AI" for a recommendation → response references customer memory
+
+## Explicit Scope Limits — do NOT build
+No real payments, real shipping/courier APIs, real bank/refund transactions, complex auth, microservices, Kubernetes, real ML models, or large databases. Everything is realistic mock data behind a simple, readable backend.
+
+## Build Order
+1. App structure/scaffolding
+2. Landing page
+3. Mock database (customers, products, orders)
+4. Agent tools (backend functions)
+5. AI agent orchestration (intent → tool selection → response)
+6. AI Support page (chat UI + activity cards)
+7. Orders, Products, Returns pages
+8. Customer memory
+9. Agent Dashboard
+10. Run the full demo flow yourself and fix anything broken before finishing
+
+## Deliverable — after building, provide
+- How to run the project
+- Required environment variables and where the AI API key goes
+- Demo customer/order used for Demo Mode
+- Short explanation of the agent architecture
+- List of implemented tools
+- 5–6 sample demo questions to try
+
+**Priority: working functionality and a polished, coherent UI over backend complexity.**

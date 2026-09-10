@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ShopAssist AI"
+description = "A polished AI-powered customer support demo for a fictional e-commerce company, with conversational support, mock order/product/return tools, customer memory, and an agent activity dashboard."
+version = "1.0.0"
+id = "artifacts/shopassist-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25693
+
+[services.development]
+run = "pnpm --filter @workspace/shopassist-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/shopassist-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/shopassist-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25693"
+BASE_PATH = "/"
